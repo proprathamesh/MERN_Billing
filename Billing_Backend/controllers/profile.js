@@ -49,18 +49,11 @@ exports.registerUser = async (req, res) => {
 // Login User
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email });
 
     if (user && (await user.comparePassword(password))) {
       const token = generateToken(user.id);
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 3600000, // 1 hour
-      });
       res.json({
         _id: user._id,
         username: user.username,

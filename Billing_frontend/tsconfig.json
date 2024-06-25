@@ -20,6 +20,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "react-signature-canvas.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -3,7 +3,7 @@ const Billing = require('../models/km');
 // Create a new billing record
 exports.createBilling = async (req, res) => {
   try {
-    const billingData = { ...req.body, uid: req.user._id };
+    const billingData = { ...req.body, amount: 0, uid: req.user._id };
     const billing = new Billing(billingData);
     const savedBilling = await billing.save();
     res.status(201).json(savedBilling);

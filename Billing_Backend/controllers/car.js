@@ -103,7 +103,7 @@ exports.getCarsByUserId = async (req, res) => {
   try {
     const response = await axios.get('http://localhost:5000/api/protected', {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `${token}`
       }
     });
 
