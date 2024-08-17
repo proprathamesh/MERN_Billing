@@ -1,13 +1,15 @@
 const Car = require('../models/car');
 const axios = require('axios');
 
+const defaultUrl = process.env.DEFAULT_URL;
+
 // Create a new car
 exports.createCar = async (req, res) => {
   const { model, number } = req.body;
   const token = req.headers.authorization;
 
   try {
-    const response = await axios.get('http://localhost:5000/api/protected', {
+    const response = await axios.get(`${defaultUrl}/api/protected`, {
       headers: {
         Authorization: `${token}`
       }
@@ -101,7 +103,7 @@ exports.getCarsByUserId = async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
 
   try {
-    const response = await axios.get('http://localhost:5000/api/protected', {
+    const response = await axios.get(`${defaultUrl}/api/protected`, {
       headers: {
         Authorization: `${token}`
       }

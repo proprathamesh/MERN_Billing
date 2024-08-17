@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Tabs, Card, message } from 'antd';
 import axios from 'axios';
 import { useNavigate  } from 'react-router-dom';
+import { Context } from "../context/context";
 
 const { TabPane } = Tabs;
 
 const Auth: React.FC = () => {
 
   const navigate = useNavigate();
+  const { defaultUrl } = Context();
 
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -16,7 +18,7 @@ const Auth: React.FC = () => {
     setLoading(true);
     console.log(values)
     try {
-      const response = await axios.post('http://localhost:5000/api/profile/login', values);
+      const response = await axios.post(`${defaultUrl}/api/profile/login`, values);
       localStorage.setItem('token', response.data.token);
       message.success('Login successful!');
       navigate('/Km');
@@ -39,7 +41,7 @@ const Auth: React.FC = () => {
   }) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/profile/register', values);
+      await axios.post(`${defaultUrl}/api/profile/register`, values);
       message.success('Registration successful! Please login.');
     } catch (error: any) {
       message.error(error.response.data.message || 'Registration failed!');

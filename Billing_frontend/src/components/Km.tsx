@@ -4,10 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import SignatureCanvas from 'react-signature-canvas';
+import { Context } from '../context/context';
 
 const { Option } = Select;
 
 const BillingFormPage = () => {
+
+  const { defaultUrl } = Context();
+
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +27,7 @@ const BillingFormPage = () => {
         if (!token) {
           throw new Error('Token not found in localStorage');
         }
-        const response = await axios.get('http://localhost:5000/api/car/', {
+        const response = await axios.get(`${defaultUrl}/api/car/`, {
           headers: {
             Authorization: `${token}`,
           },

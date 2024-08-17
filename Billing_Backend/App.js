@@ -8,7 +8,7 @@ const mongoose = require('./db'); // Ensure you have the correct path to db.js
 
 const app = express();
 app.use(bodyParser.json());
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cors());
