@@ -45,7 +45,7 @@ const BillingFormPage = () => {
         if (token) {
           // Include token in the request headers
           axios.defaults.headers.common['Authorization'] = `${token}`;
-          await axios.get('http://localhost:5000/api/protected');
+          await axios.get(`${defaultUrl}/api/protected`);
           setAuthenticated(true);
         } else {
           navigate('/auth');
@@ -79,7 +79,6 @@ const BillingFormPage = () => {
   };
 
   const onFinish = async (values: any) => {
-    console.log(values);
     try {
       setLoading(true);
 
@@ -105,7 +104,8 @@ const BillingFormPage = () => {
           'Content-Type': 'application/json',
         },
       };
-      await axios.post('http://localhost:5000/api/km/', { ...values, signature }, config);
+      const response = await axios.post(`${defaultUrl}/api/km/`, { ...values, signature }, config);
+      navigate(`/billkm/${response.data._id}`)
       message.success('Billing submitted successfully!');
       setLoading(false);
     } catch (error) {
@@ -114,7 +114,6 @@ const BillingFormPage = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="container mx-auto p-4">
@@ -332,7 +331,7 @@ const BillingFormPage = () => {
       )}
       <Modal
         title="Signature Pad"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -353,6 +352,7 @@ const BillingFormPage = () => {
           canvasProps={{ width: 1000, height: 400, className: 'sigCanvas' }}
         />
       </Modal>
+
     </div>
   );
 };
