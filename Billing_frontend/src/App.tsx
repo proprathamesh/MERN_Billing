@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard'; // Example protected component
 import Km from './components/Km';
@@ -13,6 +13,7 @@ const App: React.FC = () => {
     <MyProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<Navigate to="/auth" />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/km" element={<Km />} />
