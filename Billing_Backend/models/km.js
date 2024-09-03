@@ -8,6 +8,7 @@ const billingSchema = new mongoose.Schema({
   dropAddress: { type: String, required: true },
   driverName: { type: String, required: true },
   carId: { type: mongoose.Schema.Types.ObjectId, ref: 'Car', required: true },
+  days: { type: Number, required: true },
   rate: { type: Number, required: true },
   toll: { type: Number, required: true },
   parking: { type: Number, required: true },

@@ -42,7 +42,7 @@ const KmBill: React.FC = () => {
     return (
         <div className='flex justify-center'>
             {
-                billData && <Main billingDetails={billData} />
+              billData && <Main billingDetails={billData} />
             }
         </div>
     );

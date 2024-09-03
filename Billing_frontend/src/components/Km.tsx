@@ -83,12 +83,14 @@ const BillingFormPage = () => {
       setLoading(true);
 
       // Convert numeric values to numbers
-      const numericFields = ['advance', 'rate', 'toll', 'parking', 'amount', 'startKm', 'endKm', 'haltCharges', 'foodCharges', 'overtime'];
+      const numericFields = ['advance', 'rate', 'toll', 'parking', 'amount', 'startKm', 'endKm', 'haltCharges', 'foodCharges', 'overtime', 'days'];
       numericFields.forEach(field => {
         if (!isNaN(values[field])) {
           values[field] = parseFloat(values[field]);
         }
       });
+
+      console.log(values);
 
       // Convert date field to a Date object
       values.date = moment(values.date).toDate();
@@ -243,6 +245,15 @@ const BillingFormPage = () => {
                 label="Advance"
                 name="advance"
                 rules={[{ required: true, message: 'Please input advance!' }]}
+              >
+                <Input type="number" />
+              </Form.Item>
+            </Col>
+            <Col  xs={24} sm={12}>
+              <Form.Item
+                label="Days"
+                name="days"
+                rules={[{ required: true, message: 'Please input days!' }]}
               >
                 <Input type="number" />
               </Form.Item>

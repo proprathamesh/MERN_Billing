@@ -1,17 +1,41 @@
-import React, { useRef } from 'react';
-import jsPDF from 'jspdf';
+import React, { useEffect, useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
-import {BillTemplateProps} from '../types/bill'
 import { Button } from 'antd';
-// import 'antd/dist/antd.min.css'; // Updated path for Ant Design styles
+import axios from 'axios';
+import jsPDF from 'jspdf';
+import { Context } from '../context/context';
+import {BillTemplateProps} from '../types/bill';
+import {profileTemplate} from '../types/profile';
+import BillCar from '../assets/billImages/BillCar.png'
 
 interface MainProps {
     billingDetails: BillTemplateProps;
 }
 
 const Main: React.FC<MainProps> = ({billingDetails}) => {
-    console.log(billingDetails)
     const billRef = useRef<HTMLDivElement>(null);
+    const { defaultUrl } = Context();
+
+    const [user, setUser] = useState<profileTemplate | null>();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Token not found in localStorage');
+            }
+            const config = {
+                headers: {
+                  'Authorization': `${token}`,
+                  'Content-Type': 'application/json',
+                },
+            };
+            const response = await axios.get(`${defaultUrl}/api/profile/profile`, config);
+            setUser(response.data)
+        }
+
+        fetchUser();
+    }, [])
 
     const generatePDF = async (elementRef: React.RefObject<HTMLDivElement>) => {
         if (elementRef.current) {
@@ -47,158 +71,147 @@ const Main: React.FC<MainProps> = ({billingDetails}) => {
         } else {
             console.error('Element reference is null.');
         }
-      };
+    };
 
     return (
         <div>
             <div ref={billRef} className="w-[595px] h-[842px] relative bg-white">
-                <div className="w-[595px] h-[119px] left-0 top-0 absolute">
-                    <div className="w-[595px] h-[119px] left-0 top-0 absolute bg-[#1a73e8]" />
-                    <div className="w-[79px] h-[79px] left-[39px] top-[20px] absolute bg-[#d9d9d9] rounded-full" />
-                    <div className="left-[143px] top-[29px] absolute text-white text-3xl font-normal font-['Jacques Francois']">Prathamesh Tours & Travels</div>
-                    <div className="left-[144px] top-[79px] absolute text-white text-[15px] font-normal font-['Jacques Francois']">All types of AC/Non AC car available on rent for 24 hours</div>
-                </div>
-                <div className="w-[595px] h-[25px] left-0 top-[119px] absolute">
-                    <div className="w-[192.14px] h-[15.26px] left-[200.53px] top-[4.87px] absolute">
-                    </div>
-                </div>
-                <div className="w-[595px] h-[25px] px-[30px] left-0 top-[144px] absolute justify-between items-center inline-flex">
-                    <div className="w-[77px] h-[17px] relative">
-                        <div className="left-0 top-0 absolute text-black text-sm font-bold font-['Amaranth']">Bill No:</div>
-                        <div className="left-[50px] top-0 absolute text-black text-sm font-normal font-['Amaranth']">1234</div>
-                    </div>
-                    <div className="w-[94px] h-[17px] relative">
-                        <div className="left-0 top-0 absolute text-black text-sm font-bold font-['Amaranth']">Date:</div>
-                        <div className="left-[40px] top-0 absolute text-black text-sm font-normal font-['Amaranth']">01/02/24</div>
-                    </div>
-                </div>
-                <div className="left-[30px] top-[396px] absolute text-[#1a73e8] text-lg font-bold font-['Amiko']">Charges</div>
-                <div className="w-[297.50px] h-[232px] left-0 top-[568px] absolute">
-                    <div className="w-[297.50px] h-[116px] left-0 top-[116px] absolute bg-white" />
-                    <div className="w-[297.50px] h-[116px] left-0 top-0 absolute bg-white" />
-                </div>
-                <div className="w-[595px] h-[42px] left-0 top-[800px] absolute">
-                    <div className="w-[595px] h-[42px] left-0 top-0 absolute bg-[#1a73e8]" />
-                    <div className="left-[131px] top-[9px] absolute text-white text-lg font-normal font-['Jacques Francois']">Thank you for choosing our taxi service!</div>
-                </div>
-                <div className="w-[298px] h-[116px] left-[297px] top-[684px] absolute">
-                    <div className="w-[297.50px] h-[116px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[298px] left-0 top-[85px] absolute text-center text-black text-sm font-normal font-['Amiko']">Authorised Signature</div>
-                </div>
-                <div className="w-[595px] px-[30px] left-0 top-[169px] absolute bg-white justify-between items-center inline-flex">
-                    <div className="w-[267px] h-[127px] relative">
-                    <div className="w-[267px] h-[127px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[267px] h-[127px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[182px] h-[15.88px] left-0 top-[37.26px] absolute">
-                        <div className="w-[45px] h-[15.88px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Name: </div>
-                        <div className="w-[auto] h-[15.88px] left-[53px] top-0 absolute text-black text-sm font-normal font-['Amiko']">{billingDetails.name}</div>
-                    </div>
-                    <div className="w-36 h-[15.88px] left-0 top-[63.98px] absolute">
-                        <div className="w-[52px] h-[15.88px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Mobile: </div>
-                        <div className="w-[87px] h-[15.88px] left-[57px] top-0 absolute text-black text-sm font-normal font-['Amiko']">8767370132</div>
-                    </div>
-                    <div className="w-[155px] h-[20.05px] left-0 top-[5.01px] absolute text-[#1a73e8] text-lg font-bold font-['Amiko']">Customer Details</div>
-                    </div>
-                    <div className="w-[267px] h-[127px] relative">
-                    <div className="w-[267px] h-[127px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[267px] h-[127px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[182px] h-[15.88px] left-0 top-[36.26px] absolute">
-                        <div className="w-[45px] h-[15.88px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Name: </div>
-                        <div className="w-[129px] h-[15.88px] left-[53px] top-0 absolute text-black text-sm font-normal font-['Amiko']">Prathamesh Yadav</div>
-                    </div>
-                    <div className="w-[184px] h-[15.88px] left-0 top-[63.98px] absolute">
-                        <div className="w-[79px] h-[15.88px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Vehicle No: </div>
-                        <div className="w-[102px] h-[15.88px] left-[82px] top-0 absolute text-black text-sm font-normal font-['Amiko']">MH41AM3099</div>
-                    </div>
-                    <div className="w-[188px] h-[15.88px] left-0 top-[92.54px] absolute">
-                        <div className="w-[89px] h-[15.88px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Vehicle type: </div>
-                        <div className="w-24 h-[15.88px] left-[92px] top-0 absolute text-black text-sm font-normal font-['Amiko']">Innova Crysta</div>
-                    </div>
-                    <div className="w-[122px] h-[20.05px] left-0 top-[5.01px] absolute text-[#1a73e8] text-lg font-bold font-['Amiko']">Driver Details</div>
-                    </div>
-                </div>
-                <div className="w-[297.50px] h-[116px] left-[297px] top-[568px] absolute">
-                    <div className="w-[297.50px] h-[116px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[267px] left-[1px] top-[24px] absolute text-right text-[#1a73e8] text-lg font-bold font-['Amiko']">Amount Paid: Rs. 15900</div>
-                </div>
-                <div className="w-[595px] h-[98px] left-[1px] top-[289px] absolute">
-                    <div className="w-[595px] h-[98px] left-0 top-0 absolute bg-white" />
-                    <div className="w-[267px] h-[98px] left-[29px] top-0 absolute">
-                    <div className="w-[93px] h-[14.90px] left-0 top-[42.71px] absolute">
-                        <div className="w-[51px] h-[14.90px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Pickup:</div>
-                        <div className="w-9 h-[14.90px] left-[57px] top-0 absolute text-black text-sm font-normal font-['Amiko']">Pune</div>
-                    </div>
-                    <div className="w-[133px] h-[14.90px] left-0 top-[69.66px] absolute">
-                        <div className="w-[87px] h-[14.90px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Starting Km:</div>
-                        <div className="w-[41px] h-[14.90px] left-[92px] top-0 absolute text-black text-sm font-normal font-['Amiko']">20Km</div>
-                    </div>
-                    <div className="w-[155px] h-[15.47px] left-0 top-[8.62px] absolute text-[#1a73e8] text-lg font-bold font-['Amiko']">Trip Details</div>
-                    </div>
-                    <div className="w-[267px] h-[98px] left-[299px] top-0 absolute">
-                        <div className="w-[82px] h-[14.90px] left-0 top-[41.71px] absolute">
-                            <div className="w-[39px] h-[14.90px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Drop:</div>
-                            <div className="w-9 h-[14.90px] left-[46px] top-0 absolute text-black text-sm font-normal font-['Amiko']">Pune</div>
+                <div className='bg-[#3388FF] p-5 pb-1 text-white text-center'>
+                    <div className=' flex justify-evenly items-center'>
+                        <div className='me-3'>
+                            <img className='rounded-full w-[80px] h-[80px]' src={`${defaultUrl}/${user?.profilePicture}`} alt="" />
                         </div>
-                        <div className="w-[138px] h-[14.90px] left-0 top-[68.66px] absolute">
-                            <div className="w-[79px] h-[14.90px] left-0 top-0 absolute text-black text-sm font-bold font-['Amiko']">Ending Km:</div>
-                            <div className="w-[50px] h-[14.90px] left-[88px] top-0 absolute text-black text-sm font-normal font-['Amiko']">200Km</div>
+                        <div>
+                            <h1 className='text-2xl font-bold'>{user?.companyName}</h1>
+                            <h2 className='pt-3 text-xs'>All types of AC/Non AC car available on rent for 24 hours</h2>
                         </div>
                     </div>
+                    <hr className='mt-3' />
+                    <h1 className='text-xs pb-2'>{user?.address}</h1>
                 </div>
-                <div className="w-[595px] h-[0px] left-[595px] top-[115px] absolute origin-top-left rotate-[179.90deg] border border-white"></div>
-                <div className="w-[268px] h-[149px] left-[30px] top-[420px] absolute">
-                    <div className="w-[267px] h-[148px] left-0 top-[1px] absolute flex-col justify-center items-center inline-flex">
-                        <div className="w-[264px] h-[37px] relative">
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Outstation Charges</div>
-                            <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
+
+                <div className='px-5 pb-2 flex justify-between items-center text-xs'>
+                    <div><span className='font-bold'>Bill No:</span> 1234</div>
+                    <div><span className='font-bold'>Date:</span> 2024-08-13</div>
+                </div>
+
+                <div className='px-5 py-1 text-xs flex'>
+                    <div className='w-1/2'>
+                        <div className='text-lg text-[#3388FF] font-semibold'>Customer Details</div>
+                        <div className='py-1'><span className='font-bold'>Customer Name: </span>{billingDetails.name}</div>
+                        <div className='py-1'><span className='font-bold'>Mobile No: </span>{billingDetails.mobile}</div>
+                    </div>
+                    <div className='ps-2'>
+                        <div className='text-lg text-[#3388FF] font-semibold'>Driver Details</div>
+                        <div className='py-1'><span className='font-bold'>Driver Name: </span> {billingDetails.driverName}</div>
+                        <div className='py-1'><span className='font-bold'>Vehicle No: </span> {billingDetails.carId?.number}</div>
+                        <div className='py-1'><span className='font-bold'>Type of Vehicle: </span> {billingDetails.carId.model}</div>
+                    </div>
+                </div>
+
+                <div className='px-5 py-1 text-xs flex'>
+                    <div className='w-1/2'>
+                        <div className='text-lg text-[#3388FF] font-semibold'>Trip Details</div>
+                        <div className='py-1'><span className='font-bold'>Pickup Address: </span> {billingDetails.pickupAddress}</div>
+                        <div className='py-1'><span className='font-bold'>Starting Km: </span>{billingDetails.startKm} Km</div>
+                    </div>
+                    <div className='ps-2 pt-7'>
+                        <div className='py-1'><span className='font-bold'>Drop Address: </span> {billingDetails.dropAddress}</div>
+                        <div className='py-1'><span className='font-bold'>Ending Km: </span> {billingDetails.endKm} Km</div>
+                    </div>
+                </div>
+
+                <div className='px-5 py-1 text-xs'>
+                    <div className='text-lg text-[#3388FF] font-semibold'>Charges</div>
+                    <div className='flex'>
+                        <div className='w-1/2'>
+                            <div>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold'>Outstation charges</div>
+                                    <div className='pe-2'>Rs. {billingDetails.rate}</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold'>Total Km</div>
+                                    <div className='pe-2'>{billingDetails.endKm - billingDetails.startKm} Km</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold'>Toll Charges</div>
+                                    <div className='pe-2'>Rs. {billingDetails.toll}</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold'>Parking</div>
+                                    <div className='pe-2'>Rs. {billingDetails.parking}</div>
+                                </div>
+                                <hr />
+                            </div>
                         </div>
-                        <div className="w-[264px] h-[37px] relative">
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Total Km</div>
-                            <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">300 Km</div>
-                        </div>
-                        <div className="w-[264px] h-[37px] relative">
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Toll Charges</div>
-                            <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
-                        </div>
-                        <div className="w-[264px] h-[37px] relative">
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                            <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Parking</div>
-                            <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
+
+                        <div className='w-1/2'>
+                            <div className='ps-4'>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold '>Days</div>
+                                    <div>{billingDetails.days}</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div className='ps-4'>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold '>Drivers Food</div>
+                                    <div>Rs. {billingDetails.foodCharges}</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div className='ps-4'>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold '>Overtime</div>
+                                    <div>Rs. {billingDetails.overtime}</div>
+                                </div>
+                                <hr />
+                            </div>
+                            <div className='ps-4'>
+                                <div className='flex justify-between py-2'>
+                                    <div className='font-bold '>Advance payment</div>
+                                    <div>Rs. {billingDetails.overtime}</div>
+                                </div>
+                                <hr />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="h-[148px] left-[298px] top-[420px] absolute flex-col justify-center items-center inline-flex">
-                    <div className="w-[264px] h-[37px] relative">
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Days</div>
-                        <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
+
+                <div className='flex px-5'>
+                    <div className='w-2/5'>
+                        <img className='w-full my-3 pt-1' src={BillCar} alt="" />
                     </div>
-                    <div className="w-[264px] h-[37px] relative">
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Overtime</div>
-                        <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">300 Km</div>
+                    <div className='w-3/5 text-lg text-[#3388FF] font-semibold text-right'>Amount to be Paid: Rs. 15900</div>
+                </div>
+
+                <div className='px-6 py-4 flex'>
+                    <div className='w-1/2 flex justify-center items-center'>
+                        <div>
+                            <img className='w-[200px] h-[93px]' src={billingDetails.signature} alt="" />
+                            <div className='text-center pt-4'>Customer Signature</div>
+                        </div>
                     </div>
-                    <div className="w-[264px] h-[37px] relative">
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Drivers Food</div>
-                        <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
+                    <div className='w-1/2 flex justify-center items-center'>
+                        <div>
+                            <img className='w-[200px] h-[93px]' src="https://cdn.shopify.com/s/files/1/0594/4639/5086/files/Slanted_Signature.jpg?v=1680536859" alt="" />
+                            <div className='text-center pt-4'>Authorised Signature</div>
+                        </div>
                     </div>
-                    <div className="w-[264px] h-[37px] relative">
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="w-[264px] h-[37px] left-0 top-0 absolute bg-white" />
-                        <div className="left-0 top-[11px] absolute text-black text-sm font-bold font-['Amiko']">Advance</div>
-                        <div className="left-[182px] top-[11px] absolute text-black text-sm font-normal font-['Amiko']">Rs. 3000</div>
-                    </div>
+                </div>
+
+                <div className='bg-[#3388FF] w-full mt-3'>
+                    <div className='text-center text-white my-1 pb-2'>Thank you for choosing our taxi service!</div>
                 </div>
             </div>
             <Button onClick={() => {generatePDF(billRef)}}>Download Bill</Button>

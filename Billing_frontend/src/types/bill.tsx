@@ -1,21 +1,24 @@
+import { carTemplate } from '../types/car';
+
 export interface BillTemplateProps {
     uid: string,
-    bill: number,
     date: string,
     name: string,
-    phone: string,
-    driver: string,
-    carId: string,
-    pickup: string,
-    drop: string,
+    mobile: string,
+    driverName: string,
+    carId: carTemplate,
+    pickupAddress: string,
+    dropAddress: string,
     startKm: number,
     endKm: number,
-    price: number,
+    signature: string,
+    rate: number,
     toll: number,
     parking: number,
     days: number,
     overtime: number,
-    food: number,
+    foodCharges: number,
+    haltCharges: number,
     advance: number,
     amount: number,
-} 
+}

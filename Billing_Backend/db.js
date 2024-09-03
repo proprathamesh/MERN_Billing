@@ -1,9 +1,12 @@
 // db.js
 
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 // Replace with your MongoDB connection string
-const mongoURI = 'mongodb://localhost:27017/Billing';
+const mongoURI = process.env.MongoUrl;
 
 // Options for the mongoose connect method
 const options = {

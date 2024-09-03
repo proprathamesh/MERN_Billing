@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Tabs, Card, message } from 'antd';
-import axios from 'axios';
 import { useNavigate  } from 'react-router-dom';
+import axios from 'axios';
+import { Form, Input, Button, Tabs, Card, message, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { Context } from "../context/context";
 
 const { TabPane } = Tabs;
@@ -13,6 +14,21 @@ const Auth: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+
+  const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList.slice(-1);
+  };
+
+  const handleFileChange = (file: any) => {
+    const isFileSizeValid = file.size / 1024 / 1024 < 1; // Check if file is less than 1MB
+    if (!isFileSizeValid) {
+      message.error('File must be smaller than 1MB!');
+    }
+    return isFileSizeValid;
+  };
 
   const onLoginFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
@@ -35,26 +51,46 @@ const Auth: React.FC = () => {
     email: string;
     password: string;
     mobile: string;
-    profilePicture: string;
+    profilePicture: any;
     companyName: string;
     address: string;
   }) => {
     setLoading(true);
+    const formData = new FormData();
+    formData.append('username', values.username);
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+    formData.append('mobile', values.mobile);
+    formData.append('companyName', values.companyName);
+    formData.append('address', values.address);
+  
+    if (values.profilePicture.length > 0) {
+      formData.append('profilePicture', values.profilePicture[0].originFileObj);
+    }
+  
     try {
-      await axios.post(`${defaultUrl}/api/profile/register`, values);
+      await axios.post(`${defaultUrl}/api/profile/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       message.success('Registration successful! Please login.');
     } catch (error: any) {
-      message.error(error.response.data.message || 'Registration failed!');
+      // Extracting message from error object
+      const errorMessage = error.response?.data?.message || 'Registration failed!';
+      console.log(error)
+      message.error(errorMessage);
     } finally {
       setLoading(false);
-      form.resetFields();
     }
   };
+  
 
   return (
     <Card title="BillGenie" style={{ width: 400, margin: '0 auto', marginTop: '100px' }}>
       <Tabs defaultActiveKey="1">
         <TabPane tab="Login" key="1">
+
           <Form name="login" initialValues={{ remember: true }} onFinish={onLoginFinish}>
             <Form.Item name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
               <Input placeholder="Email" />
@@ -68,8 +104,10 @@ const Auth: React.FC = () => {
               </Button>
             </Form.Item>
           </Form>
+
         </TabPane>
         <TabPane tab="Register" key="2">
+
           <Form form={form} name="register" onFinish={onRegisterFinish}>
             <Form.Item name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
               <Input placeholder="Username" />
@@ -83,8 +121,17 @@ const Auth: React.FC = () => {
             <Form.Item name="mobile" rules={[{ required: true, message: 'Please input your mobile number!' }]}>
               <Input placeholder="Mobile" />
             </Form.Item>
-            <Form.Item name="profilePicture">
-              <Input placeholder="Profile Picture URL" />
+            <Form.Item name="profilePicture" label="Profile Picture" valuePropName="fileList" getValueFromEvent={normFile}>
+              <Upload name='profilePicture' maxCount={1} beforeUpload={handleFileChange} listType="picture-card" customRequest={({ file, onSuccess }) => {
+                  // Handle the custom upload request here
+                  // This is a placeholder for actual upload logic
+                  setTimeout(() => onSuccess && onSuccess(file), 0);
+                }}>
+                <button style={{ border: 0, background: 'none' }} type="button">
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </button>
+              </Upload>
             </Form.Item>
             <Form.Item name="companyName" rules={[{ required: true, message: 'Please input your company name!' }]}>
               <Input placeholder="Company Name" />
@@ -98,6 +145,7 @@ const Auth: React.FC = () => {
               </Button>
             </Form.Item>
           </Form>
+
         </TabPane>
       </Tabs>
     </Card>
