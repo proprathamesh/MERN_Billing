@@ -192,7 +192,7 @@ const Main: React.FC<MainProps> = ({billingDetails}) => {
                     <div className='w-2/5'>
                         <img className='w-full my-3 pt-1' src={BillCar} alt="" />
                     </div>
-                    <div className='w-3/5 text-lg text-[#3388FF] font-semibold text-right'>Amount to be Paid: Rs. 15900</div>
+                    <div className='w-3/5 text-lg text-[#3388FF] font-semibold text-right'>Amount to be Paid: Rs. {billingDetails.days*(billingDetails.rate + billingDetails.foodCharges + billingDetails.haltCharges) + billingDetails.overtime + billingDetails.toll + billingDetails.parking}</div>
                 </div>
 
                 <div className='px-6 py-4 flex'>
