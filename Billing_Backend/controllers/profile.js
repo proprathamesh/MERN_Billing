@@ -3,21 +3,32 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const path = require('path');
 const multer = require('multer');
+const multerS3 = require('multer-s3'); // multer S3 storage
+const { S3Client } = require('@aws-sdk/client-s3');
 
 dotenv.config();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'logos/'); // Ensure this directory exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append extension
+// Configure AWS SDK with credentials and region
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 }, // Limit file size to 1MB (adjust as needed)
+  storage: multerS3({
+    s3: s3Client,
+    bucket: process.env.S3_BUCKET_NAME,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString() + path.extname(file.originalname)); // Set the file name in S3
+    },
+  }),
+  limits: { fileSize: 1000000 }, // Limit file size to 1MB
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
@@ -49,7 +60,7 @@ module.exports = {
         return res.status(400).json({ message: 'User already exists' });
       }
 
-      const profileImagePath = req.file.path;
+      const profileImagePath = req.file.location;
       const user = await User.create({
         username,
         email,
@@ -57,7 +68,7 @@ module.exports = {
         mobile,
         companyName,
         address,
-        profilePicture: profileImagePath,
+        profilePicture: profileImageUrl,
       });
 
       if (user) {

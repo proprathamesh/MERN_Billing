@@ -6,7 +6,7 @@ const MyContext = createContext<any | undefined>(undefined);
 
 // Create a provider component
 export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const defaultUrl = 'http://billing-env-1.eba-uxy2bnxa.ap-south-1.elasticbeanstalk.com';
+  const defaultUrl = 'http://localhost:5000';
 
   const contextValue: any = {
     defaultUrl

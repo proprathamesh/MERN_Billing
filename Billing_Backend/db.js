@@ -8,20 +8,14 @@ dotenv.config();
 // Replace with your MongoDB connection string
 const mongoURI = process.env.MongoUrl;
 
-// Options for the mongoose connect method
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-};
-
 // Connect to MongoDB
-mongoose.connect(mongoURI, options)
-  .then(() => {
-    console.log('MongoDB connected successfully');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+const username = 'Prathamesh1712';
+const password = process.env.MongoPass;
+const dbName = 'Billing';  // Replace with your database name
+const clusterEndpoint = 'medicalapp.cfmceoy2uckn.ap-south-1.docdb.amazonaws.com:27017';
+const caFilePath = '/home/ubuntu/WebStars_anantya_bacckend/global-bundle.pem';  // Ensure the CA file path is correct
+const url = `mongodb://${username}:${password}@${clusterEndpoint}/${dbName}?tls=true&tlsCAFile=${caFilePath}`;
+mongoose.connect(url);
 
 // Optional: handle connection events
 mongoose.connection.on('connected', () => {
