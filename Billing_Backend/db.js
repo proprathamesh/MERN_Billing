@@ -13,7 +13,7 @@ const username = 'Prathamesh1712';
 const password = process.env.MongoPass;
 const dbName = 'Billing';  // Replace with your database name
 const clusterEndpoint = 'medicalapp.cfmceoy2uckn.ap-south-1.docdb.amazonaws.com:27017';
-const caFilePath = '/home/ubuntu/WebStars_anantya_bacckend/global-bundle.pem';  // Ensure the CA file path is correct
+const caFilePath = '/home/ubuntu/MERN_Billing/global-bundle.pem';  // Ensure the CA file path is correct
 const url = `mongodb://${username}:${password}@${clusterEndpoint}/${dbName}?tls=true&tlsCAFile=${caFilePath}`;
 mongoose.connect(url);
 
