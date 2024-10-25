@@ -6,7 +6,7 @@ const MyContext = createContext<any | undefined>(undefined);
 
 // Create a provider component
 export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const defaultUrl = 'http://13.235.78.214/:5000';
+  const defaultUrl = 'http://13.235.78.214:5000';
 
   const contextValue: any = {
     defaultUrl
